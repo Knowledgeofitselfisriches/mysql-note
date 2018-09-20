@@ -1,8 +1,8 @@
 #变量
 /*
 系统变量：
-	全局变量
-	会话变量
+	全局变量global
+	会话变量session
 
 自定义变量：
 	用户变量
@@ -37,7 +37,7 @@ SHOW GLOBAL VARIABLES;
 SHOW GLOBAL VARIABLES LIKE '%char%';
 #③查看指定的系统变量的值
 SELECT @@global.autocommit;
-#④为某个系统变量赋值
+#④为某个系统变量赋值 跨连接设置
 SET @@global.autocommit=0;
 SET GLOBAL autocommit=0;
 
@@ -70,23 +70,24 @@ SET SESSION tx_isolation='read-committed';
 作用域：针对于当前会话（连接）有效，作用域同于会话变量
 */
 
-#赋值操作符：=或:=
+#赋值操作符：=或为区分其他赋值 :=
 #①声明并初始化
-SET @变量名=值;
-SET @变量名:=值;
-SELECT @变量名:=值;
+# SET @变量名=值;
+# SET @变量名:=值;
+# SELECT @变量名:=值;
 
 #②赋值（更新变量的值）
 #方式一：
-	SET @变量名=值;
-	SET @变量名:=值;
-	SELECT @变量名:=值;
+# 	SET @变量名=值;
+# 	SET @变量名:=值;
+# 	SELECT @变量名:=值;
 #方式二：
-	SELECT 字段 INTO @变量名
-	FROM 表;
+# 	SELECT 字段 INTO @变量名
+# 	FROM 表;
 #③使用（查看变量的值）
-SELECT @变量名;
-
+# SELECT @变量名;
+SET @count=1;
+SELECT @count;
 
 #2》局部变量
 /*
@@ -95,10 +96,9 @@ SELECT @变量名;
 */
 
 #①声明
-DECLARE 变量名 类型;
-DECLARE 变量名 类型 【DEFAULT 值】;
-
-
+# DECLARE 变量名 类型;
+# DECLARE 变量名 类型 【DEFAULT 值】;
+declare age int default 0;
 #②赋值（更新变量的值）
 
 #方式一：
@@ -121,18 +121,20 @@ SET @sum=@m+@n;
 SELECT @sum;
 
 #局部变量
-DECLARE m INT DEFAULT 1;
-DECLARE n INT DEFAULT 1;
-DECLARE SUM INT;
-SET SUM=m+n;
-SELECT SUM;
+BEGIN
+  DECLARE m INT DEFAULT 1;
+  DECLARE n INT DEFAULT 1;
+  DECLARE SUM INT;
+  SET SUM=m+n;
+  SELECT SUM;
+end
 
 
 #用户变量和局部变量的对比
 
-		作用域			定义位置		语法
-用户变量	当前会话		会话的任何地方		加@符号，不用指定类型
-局部变量	定义它的BEGIN END中 	BEGIN END的第一句话	一般不用加@,需要指定类型
+# 		作用域			定义位置		语法
+# 用户变量	当前会话		会话的任何地方		加@符号，不用指定类型
+# 局部变量	定义它的BEGIN END中 	BEGIN END的第一句话	一般不用加@,需要指定类型
 			
 
 

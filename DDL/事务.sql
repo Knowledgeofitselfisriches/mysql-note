@@ -14,19 +14,22 @@ update 表 set 张三丰的余额=500 where name='张三丰'
 意外
 update 表 set 郭襄的余额=1500 where name='郭襄'
 
+# 存储引擎 mysql数据使用不同的技术存储在文件或内存中
+# 查看方式： show engines;
 
+# 只有innnodb 支持事务
 事务的特性：
 ACID
-原子性：一个事务不可再分割，要么都执行要么都不执行
-一致性：一个事务执行会使数据从一个一致状态切换到另外一个一致状态
-隔离性：一个事务的执行不受其他事务的干扰
-持久性：一个事务一旦提交，则会永久的改变数据库的数据.
+原子性(Atomicity)：一个事务不可再分割，要么都执行要么都不执行
+一致性(Consistency)：一个事务执行会使数据从一个一致状态切换到另外一个一致状态
+隔离性(Isolation)：一个事务的执行不受其他事务的干扰(看隔离级别)
+持久性(Durability)：一个事务一旦提交，则会永久的改变数据库的数据.
 
 
 
 事务的创建
-隐式事务：事务没有明显的开启和结束的标记
-比如insert、update、delete语句
+隐式事务：事务没有明显的开启和结束的标记 因为autocommit 默认ON
+比如insert、update、delete语句 一条语句为一个事务
 
 delete from 表 where id =1;
 
@@ -38,26 +41,40 @@ set autocommit=0;
 步骤1：开启事务
 set autocommit=0;
 start transaction;可选的
-步骤2：编写事务中的sql语句(select insert update delete)
+步骤2：编写事务中的sql语句(select insert update delete)CURD
 语句1;
 语句2;
 ...
 
-步骤3：结束事务
+步骤3：结束事务 只执行一个
 commit;提交事务
 rollback;回滚事务
 
-savepoint 节点名;设置保存点
+savepoint 节点名;设置保存点 ，搭配rollbact to 节点名
 
+# 事务结束条件
+# 1. commit or rollback 语句
+# 2. DDL DCL 语句 自动提交
+# 3. 用户会话正常结束
+# 4. 系统异常终止
 
+# 数据库事务并发问题
+# 1.脏读：一个事务读取了另一个事务更新但未被提交的字段。另一个事务回滚，则该事务的读取是错误的
+# 2.不可重复读：一个事务读取了某个字段。另一个事务提交了更新，当该事物再次读取时，值不同
+# 3.幻读：一个事务读取了某个字段。另一个事务提交了插入、删除，当该事物再次读取时，多了几行
 
-事务的隔离级别：
-		  脏读		不可重复读	幻读
-read uncommitted：√		√		√
-read committed：  ×		√		√
-repeatable read： ×		×		√
-serializable	  ×             ×               ×
+# 事务的隔离级别：
+读未提交		               脏读		不可重复读	幻读
+read uncommitted：√		        √		√
+读已提交
+read committed：  ×		        √		√
+可重复读
+repeatable read： ×		        ×		√
+串行化 阻塞其它事务， 并发性能低下
+serializable	    ×             ×      ×
 
+# 设置中文字体显示
+set names gbk;
 
 mysql中默认 第三个隔离级别 repeatable read
 oracle中默认第二个隔离级别 read committed
@@ -80,7 +97,7 @@ update 表 set 郭襄的余额=1500 where name='郭襄'
 */
 
 SHOW VARIABLES LIKE 'autocommit';
-SHOW ENGINES;
+
 
 #1.演示事务的使用步骤
 
@@ -88,10 +105,10 @@ SHOW ENGINES;
 SET autocommit=0;
 START TRANSACTION;
 #编写一组事务的语句
-UPDATE account SET balance = 1000 WHERE username='张无忌';
-UPDATE account SET balance = 1000 WHERE username='赵敏';
+UPDATE account SET balance = 500 WHERE username = 'zwj';
+UPDATE account SET balance = 1500 WHERE username = 'zm';
 
-#结束事务
+# 回滚
 ROLLBACK;
 #commit;
 

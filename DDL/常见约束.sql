@@ -185,7 +185,9 @@ ALTER TABLE stuinfo ADD UNIQUE(seat);
 
 
 #5.添加外键
-ALTER TABLE stuinfo ADD CONSTRAINT fk_stuinfo_major FOREIGN KEY(majorid) REFERENCES major(id); 
+ALTER TABLE stuinfo ADD CONSTRAINT fk_stuinfo_major FOREIGN KEY(majorid) REFERENCES major(id);
+# 可加列级约束 ，但没有效果
+
 
 #三、修改表时删除约束
 
@@ -197,6 +199,7 @@ ALTER TABLE stuinfo MODIFY COLUMN age INT ;
 
 #3.删除主键
 ALTER TABLE stuinfo DROP PRIMARY KEY;
+ALTER TABLE stuinfo MODIFY COLUMN id INT ;
 
 #4.删除唯一
 ALTER TABLE stuinfo DROP INDEX seat;
@@ -205,6 +208,16 @@ ALTER TABLE stuinfo DROP INDEX seat;
 ALTER TABLE stuinfo DROP FOREIGN KEY fk_stuinfo_major;
 
 SHOW INDEX FROM stuinfo;
+
+CREATE TABLE constraints (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	stuName varchar(20) NOT NULL UNIQUE,
+	gender CHAR(1) CHECK(gender='男' OR gender='女'),
+	seat INT UNIQUE,
+	age INT DEFAULT 18,
+	majorid int,
+	constraint fk_constraints_majorid foreign key (majorid) references major(id)
+)
 
 
 

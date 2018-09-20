@@ -1,7 +1,12 @@
 #视图
 /*
 含义：虚拟表，和普通表一样使用
-mysql5.1版本出现的新特性，是通过表动态生成的数据
+mysql5.1版本出现的新特性，是通过表动态生成的数据 是在使用视图时的动态生成的临时表， 只保存了
+sql逻辑， 不保存结果
+
+场景：
+  多个地方用到了同样的查询结果
+  查询结果使用的sql逻辑复杂
 
 比如：舞蹈班和普通班级的对比
 	创建语法的关键字	是否实际占用物理空间	使用
@@ -34,7 +39,10 @@ SELECT * FROM v1 WHERE stuname LIKE '张%';
 create view 视图名
 as
 查询语句;
-
+好处：
+  重用sql
+  简化sql
+  保护数据，提高安全性
 */
 USE myemployees;
 
@@ -135,7 +143,7 @@ DROP VIEW emp_v1,emp_v2,myv3;
 #四、查看视图
 
 DESC myv3;
-
+# 查看视图的构建过程
 SHOW CREATE VIEW myv3;
 
 
@@ -157,12 +165,17 @@ SELECT * FROM employees;
 #1.插入
 
 INSERT INTO myv1 VALUES('张飞','zf@qq.com');
+# 插入的结果会影响原始表
 
 #2.修改
 UPDATE myv1 SET last_name = '张无忌' WHERE last_name='张飞';
+# 修改的结果会影响原始表
 
 #3.删除
 DELETE FROM myv1 WHERE last_name = '张无忌';
+# 删除的结果会影响原始表
+
+# 视图一般会添加权限，要求只能读，避免对原始表的影响
 
 #具备以下特点的视图不允许更新
 
